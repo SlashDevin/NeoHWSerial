@@ -16,7 +16,7 @@ The original `HardwareSerial` files were modified to include two new methods, `a
 
 ```
     typedef void (* isr_t)( uint8_t );
-    void attachInterrupt( isr_t fn = (isr_t) NULL );
+    void attachInterrupt( isr_t fn );
     void detachInterrupt() { attachInterrupt( (isr_t) NULL ); };
 
   private:
