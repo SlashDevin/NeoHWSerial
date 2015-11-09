@@ -112,9 +112,6 @@ void NeoHWSerial::store_char( uint8_t c )
     !defined(USART_RXC_vect)
   #error "Don't know what the Data Received vector is called for the first UART"
 #else
-  void serialEvent() __attribute__((weak));
-  void serialEvent() {}
-  #define serialEvent_implemented
 #if defined(USART_RX_vect)
   ISR(USART_RX_vect)
 #elif defined(USART0_RX_vect)
@@ -145,9 +142,6 @@ void NeoHWSerial::store_char( uint8_t c )
 #endif
 
 #if defined(USART1_RX_vect)
-  void serialEvent1() __attribute__((weak));
-  void serialEvent1() {}
-  #define serialEvent1_implemented
   ISR(USART1_RX_vect)
   {
     if (bit_is_clear(UCSR1A, UPE1)) {
@@ -160,9 +154,6 @@ void NeoHWSerial::store_char( uint8_t c )
 #endif
 
 #if defined(USART2_RX_vect) && defined(UDR2)
-  void serialEvent2() __attribute__((weak));
-  void serialEvent2() {}
-  #define serialEvent2_implemented
   ISR(USART2_RX_vect)
   {
     if (bit_is_clear(UCSR2A, UPE2)) {
@@ -175,9 +166,6 @@ void NeoHWSerial::store_char( uint8_t c )
 #endif
 
 #if defined(USART3_RX_vect) && defined(UDR3)
-  void serialEvent3() __attribute__((weak));
-  void serialEvent3() {}
-  #define serialEvent3_implemented
   ISR(USART3_RX_vect)
   {
     if (bit_is_clear(UCSR3A, UPE3)) {
@@ -188,22 +176,6 @@ void NeoHWSerial::store_char( uint8_t c )
     };
   }
 #endif
-
-void serialEventRun(void)
-{
-#ifdef serialEvent_implemented
-  if (NeoSerial.available()) serialEvent();
-#endif
-#ifdef serialEvent1_implemented
-  if (NeoSerial1.available()) serialEvent1();
-#endif
-#ifdef serialEvent2_implemented
-  if (NeoSerial2.available()) serialEvent2();
-#endif
-#ifdef serialEvent3_implemented
-  if (NeoSerial3.available()) serialEvent3();
-#endif
-}
 
 
 #if !defined(USART0_UDRE_vect) && defined(USART1_UDRE_vect)
@@ -485,6 +457,14 @@ size_t NeoHWSerial::write(uint8_t c)
 
 NeoHWSerial::operator bool() {
 	return true;
+}
+
+void NeoHWSerial::attachInterrupt( isr_t fn )
+{
+  uint8_t oldSREG = SREG;
+  cli();
+    _isr = fn;
+  SREG = oldSREG;
 }
 
 // Preinstantiate Objects //////////////////////////////////////////////////////

@@ -72,7 +72,8 @@ class NeoHWSerial : public Stream
     operator bool();
     
     typedef void (* isr_t)( uint8_t );
-    void attachInterrupt( isr_t fn = (isr_t) NULL ) { _isr = fn; };
+    void attachInterrupt( isr_t fn );
+    void detachInterrupt() { attachInterrupt( (isr_t) NULL ); };
 
     void store_char( uint8_t rx );
   private:
@@ -120,7 +121,5 @@ class NeoHWSerial : public Stream
 #if defined(UBRR3H)
   extern NeoHWSerial NeoSerial3;
 #endif
-
-extern void serialEventRun(void) __attribute__((weak));
 
 #endif
