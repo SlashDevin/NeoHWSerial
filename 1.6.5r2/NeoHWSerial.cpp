@@ -208,4 +208,12 @@ size_t NeoHWSerial::write(uint8_t c)
   return 1;
 }
 
+void NeoHWSerial::attachInterrupt( isr_t fn )
+{
+  uint8_t oldSREG = SREG;
+  cli();
+    _isr = fn;
+  SREG = oldSREG;
+}
+
 #endif // whole file
