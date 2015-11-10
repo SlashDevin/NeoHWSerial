@@ -1,4 +1,4 @@
-The **NeoHWSerial** class is intended as a drop-in replacement for the Arduino built-in class `HardwareSerial`.  To handle received characters with your procedure, you must register it with the specific instance `NeoSerial[n]` instance:
+The **NeoHWSerial** class is intended as a drop-in replacement for the Arduino built-in class `HardwareSerial`.  To handle received characters with your procedure, you must register it with the specific `NeoSerial[n]` instance:
 
 ```
   NeoSerial1.attachInterrupt( handleRxChar ); // Instead of 'Serial1'
