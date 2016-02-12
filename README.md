@@ -4,7 +4,11 @@ The **NeoHWSerial** class is intended as a drop-in replacement for the Arduino b
   NeoSerial1.attachInterrupt( handleRxChar ); // Instead of 'Serial1'
 ```
 
-To avoid name collisions, all `HardwareSerial` instances are prefixed with "Neo": your sketch will use `NeoSerial`, `NeoSerial1`, `NeoSerial2`, or `NeoSerial3`.  If you can't use a hardware serial port, you may want to consider [NeoICSerial](https://github.com/SlashDevin/NeoICSerial) or [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
+To avoid name collisions, all `HardwareSerial` instances are prefixed with "Neo": your sketch should use `NeoSerial`, `NeoSerial1`, `NeoSerial2`, or `NeoSerial3`.
+
+NOTE: NeoHWSerial is a *replacement* for HardwareSerial.  You cannot use the original `Serial` instance for debug prints; you must use `NeoSerial` instead.  Simply change all occurrences of `Serial` to `NeoSerial`, `Serial1` to `NeoSerial1`, etc.  Otherwise, the linker will emit an error because it sees two handlers for the same interrupt vector.  If you see this error, some part of your code is still using `Serial`, `Serial1`, `Serial2` or `Serial3`.
+
+If you can't use a hardware serial port, you may want to consider [NeoICSerial](https://github.com/SlashDevin/NeoICSerial) or [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 
 Remember that the registered procedure is called from an interrupt context, and it should return as quickly as possible.  Taking too much time in the procedure will cause many unpredictable behaviors, including loss of received data.  See the similar warnings for the built-in [`attachInterrupt`](https://www.arduino.cc/en/Reference/AttachInterrupt) for digital pins.
 
