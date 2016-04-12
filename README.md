@@ -11,9 +11,21 @@ The **NeoHWSerial** class is a drop-in replacement for the Arduino built-in clas
 
 To handle all received characters with your function, you must register it with the specific `NeoSerial[n]` instance:
 
-```
-  NeoSerial1.attachInterrupt( handleRxChar ); // Instead of 'Serial1'
-```
+    #include <NeoHWSerial.h>
+    
+    volatile uint32_t newlines = 0UL;
+    
+    static void handleRxChar( uint8_t c )
+    {
+      if (c == '\n')
+        newlines++;
+    }
+    
+    void setup()
+    {
+      NeoSerial1.attachInterrupt( handleRxChar );
+      NeoSerial1.begin( 9600 ); // Instead of 'Serial1'
+    }
 
 Remember that the registered function is called from an interrupt context, and it should return as quickly as possible.  Taking too much time in the function will cause many unpredictable behaviors, including loss of received data.  See the similar warnings for the built-in [`attachInterrupt`](https://www.arduino.cc/en/Reference/AttachInterrupt) for digital pins.
 
