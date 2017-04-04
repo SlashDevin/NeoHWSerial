@@ -1,13 +1,13 @@
 The **NeoHWSerial** class is a drop-in replacement for the Arduino built-in class `HardwareSerial`.  It adds the capability to handle received characters with a user-defined function *during* the RX interrupt.  This can improve performance significantly by eliminating all processing associated with storing and retrieving characters in the ring buffer **and** all polling code that constantly checked for new characters: `available` and `read` are unnecessary.
 
-###Installation
+### Installation
 
 1. Download the NeoHWSerial master zip file.
 2. Extract all files into a tempory working directory.
 3. Create a `NeoHWSerial` subdirectory in your `Arduino/Libraries` directory.
 4. Copy all files from the version number subdirectory that corresponds to your IDE version into the `NeoHWSerial` subdirectory you created in step 1.  For example, if you are using Arduino IDE version 1.0.5, copy all files from the extracted `NeoHWSerial-master/1.0.5` subdirectory into your `Arduino/Libraries/NeoHWSerial` subdirectory.
 
-###Usage
+### Usage
 
 To handle all received characters with your function, you must register it with the specific `NeoSerial[n]` instance:
 
@@ -44,9 +44,14 @@ The original `HardwareSerial` files were modified to include two new methods, `a
     isr_t  _isr;
 ```
 
-###NOTES
+### NOTES
 
-To avoid name collisions, all `HardwareSerial` instances are prefixed with "Neo" in this replacement library.  All parts of your sketch, including other libraries, must use `NeoSerial` instead of `Serial`, `NeoSerial1` instead of `Serial1`, `NeoSerial2` instead of `Serial2`, and `NeoSerial3` instead of `Serial3`.
+To avoid name collisions, all `HardwareSerial` instances are prefixed with "Neo" in this replacement library.  All parts of your sketch, including other libraries, must use
+
+*  `NeoSerial` instead of `Serial`, 
+*  `NeoSerial1` instead of `Serial1`,
+*  `NeoSerial2` instead of `Serial2`, and 
+*  `NeoSerial3` instead of `Serial3`.
 
 If there are any references to the original `HardwareSerial` instances, you will get one or more linker errors:
 
@@ -63,6 +68,6 @@ All `serialEvent` code has been removed, as this modification is intended to sol
 
 As new Arduino IDEs are released, new versions will appear in the root of this repository, named with the Arduino IDE version number.
 
-###See Also
+### See Also
 
 If you are also using software serial ports, you may be interested in [NeoICSerial](https://github.com/SlashDevin/NeoICSerial) or [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
