@@ -20,6 +20,7 @@
   Modified 14 August 2012 by Alarus
   Modified 3 December 2013 by Matthijs Kooijman
   Modified 2 November 2015 by SlashDev
+  Modified 31 October 2020 by Georg Icking-Konert
 */
 
 #ifndef NeoHWSerial_h
@@ -35,29 +36,34 @@
 // location from which to read.
 // NOTE: a "power of 2" buffer size is reccomended to dramatically
 //       optimize all the modulo operations for ring buffers.
+// WARNING: When buffer sizes are increased to > 256, the buffer index
+// variables are automatically increased in size, but the extra
+// atomicity guards needed for that are not implemented. This will
+// often work, but occasionally a race condition can occur that makes
+// NeoHWSerial behave erratically. See https://github.com/arduino/Arduino/issues/2405
 #if !defined(SERIAL_TX_BUFFER_SIZE)
-#if (RAMEND < 1000)
-#define SERIAL_TX_BUFFER_SIZE 16
-#else
-#define SERIAL_TX_BUFFER_SIZE 64
-#endif
+  #if ((RAMEND - RAMSTART) < 1023)
+    #define SERIAL_TX_BUFFER_SIZE 16
+  #else
+    #define SERIAL_TX_BUFFER_SIZE 64
+  #endif
 #endif
 #if !defined(SERIAL_RX_BUFFER_SIZE)
-#if (RAMEND < 1000)
-#define SERIAL_RX_BUFFER_SIZE 16
-#else
-#define SERIAL_RX_BUFFER_SIZE 64
-#endif
+  #if ((RAMEND - RAMSTART) < 1023)
+    #define SERIAL_RX_BUFFER_SIZE 16
+  #else
+    #define SERIAL_RX_BUFFER_SIZE 64
+  #endif
 #endif
 #if (SERIAL_TX_BUFFER_SIZE>256)
-typedef uint16_t tx_buffer_index_t;
+  typedef uint16_t tx_buffer_index_t;
 #else
-typedef uint8_t tx_buffer_index_t;
+  typedef uint8_t tx_buffer_index_t;
 #endif
 #if  (SERIAL_RX_BUFFER_SIZE>256)
-typedef uint16_t rx_buffer_index_t;
+  typedef uint16_t rx_buffer_index_t;
 #else
-typedef uint8_t rx_buffer_index_t;
+  typedef uint8_t rx_buffer_index_t;
 #endif
 
 // Define config for Serial.begin(baud, config);
@@ -120,7 +126,7 @@ class NeoHWSerial : public Stream
     virtual int available(void);
     virtual int peek(void);
     virtual int read(void);
-    int availableForWrite(void);
+    virtual int availableForWrite(void);
     virtual void flush(void);
     virtual size_t write(uint8_t);
     inline size_t write(unsigned long n) { return write((uint8_t)n); }
@@ -132,11 +138,12 @@ class NeoHWSerial : public Stream
 
     // Interrupt handlers - Not intended to be called externally
     inline void _rx_complete_irq(void);
-    void _tx_udr_empty_irq(void);
+    inline void _tx_udr_empty_irq(void);
 
-    typedef void (* isr_t)( uint8_t );
+    typedef bool (* isr_t)( uint8_t d=0x00, uint8_t s=0x00 );
     void attachInterrupt( isr_t fn );
     void detachInterrupt() { attachInterrupt( (isr_t) NULL ); };
+
   private:
     isr_t  _isr;
 
@@ -161,4 +168,6 @@ class NeoHWSerial : public Stream
   #define HAVE_HWSERIAL3
 #endif
 
-#endif
+extern void serialEventRun(void) __attribute__((weak));            // called by main() -> name fixed
+
+#endif // NeoHWSerial_h

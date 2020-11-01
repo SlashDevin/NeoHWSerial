@@ -1,0 +1,65 @@
+###############################################
+# Syntax coloring for NeoHWSerial library
+###############################################
+
+###################################
+# Classes and Datatypes (KEYWORD1)
+###################################
+
+NeoSerial	KEYWORD1
+NeoSerial0	KEYWORD1
+NeoSerial1	KEYWORD1
+NeoSerial2	KEYWORD1
+NeoSerial3	KEYWORD1
+
+###################################
+# Methods and Functions (KEYWORD2)
+###################################
+
+begin	KEYWORD2
+end	KEYWORD2
+available	KEYWORD2
+peek	KEYWORD2
+read	KEYWORD2
+availableForWrite	KEYWORD2
+flush	KEYWORD2
+write	KEYWORD2
+attachInterrupt	KEYWORD2
+detachInterrupt	KEYWORD2
+serialEventRun	KEYWORD2
+
+###################################
+# Constants (LITERAL1)
+###################################
+
+HAVE_HWSERIAL0	LITERAL1
+HAVE_HWSERIAL1	LITERAL1
+HAVE_HWSERIAL2	LITERAL1
+HAVE_HWSERIAL3	LITERAL1
+SERIAL_TX_BUFFER_SIZE	LITERAL1
+SERIAL_5N1  LITERAL1
+SERIAL_6N1  LITERAL1
+SERIAL_7N1  LITERAL1
+SERIAL_8N1  LITERAL1
+SERIAL_5N2  LITERAL1
+SERIAL_6N2  LITERAL1
+SERIAL_7N2  LITERAL1
+SERIAL_8N2  LITERAL1
+SERIAL_5E1  LITERAL1
+SERIAL_6E1  LITERAL1
+SERIAL_7E1  LITERAL1
+SERIAL_8E1  LITERAL1
+SERIAL_5E2  LITERAL1
+SERIAL_6E2  LITERAL1
+SERIAL_7E2  LITERAL1
+SERIAL_8E2  LITERAL1
+SERIAL_5O1  LITERAL1
+SERIAL_6O1  LITERAL1
+SERIAL_7O1  LITERAL1
+SERIAL_8O1  LITERAL1
+SERIAL_5O2  LITERAL1
+SERIAL_6O2  LITERAL1
+SERIAL_7O2  LITERAL1
+SERIAL_8O2  LITERAL1
+
+##################### END #####################
