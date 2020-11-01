@@ -5,16 +5,17 @@
 //  interrupt with NeoHWSerial.
 //
 
-static volatile uint16_t count = 0;
+static volatile uint16_t ISR_count = 0;
 
-static void char_received( uint8_t c )
+static bool char_received( uint8_t c, uint8_t status )
 {
   // This is a little naughty, as it will try to block
   //   in this ISR if the tx_buffer is full.  For this example,
   //   we are only sending as many characters as we have received,
   //   and they arrive at the same rate we are sending them.
   NeoSerial.write( c );
-  count++;
+  ISR_count++;
+  return false;  // do not store received data to ring buffer
 }
 
 void setup()
@@ -28,17 +29,21 @@ void loop()
 {
   delay( 1000 );
 
-  uint8_t oldSREG = SREG;
+  // get number of calls to char_received()
   noInterrupts();
-    uint16_t old_count = count;
-    count = 0;
-  SREG = oldSREG;
-  
-  if (old_count) {
+  uint16_t echo_count = ISR_count;
+  ISR_count = 0;
+  interrupts();
+
+  if (echo_count)
+  {
     NeoSerial.print( '\n' );
-    NeoSerial.print( old_count );
+    NeoSerial.print( echo_count );
     NeoSerial.println( F(" characters echoed") );
-  } else
+  }
+  else
+  {
     NeoSerial.print( '.' );
+  }
   NeoSerial.flush();
 }

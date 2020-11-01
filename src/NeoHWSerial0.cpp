@@ -1,5 +1,5 @@
 /*
-  NeoHWSerial1.cpp - Hardware serial library with attachInterrupt
+  NeoHWSerial0.cpp - Hardware serial library with attachInterrupt
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -21,11 +21,12 @@
   Modified 14 August 2012 by Alarus
   Modified 3 December 2013 by Matthijs Kooijman
   Modified 2 November 2015 by SlashDev
+  Modified 31 October 2020 by Georg Icking-Konert
 */
 
 #include "Arduino.h"
-#include <NeoHWSerial.h>
-#include <NeoHWSerial_private.h>
+#include "NeoHWSerial.h"
+#include "NeoHWSerial_private.h"
 
 // Each NeoHWSerial is defined in its own file, sine the linker pulls
 // in the entire file when any element inside is used. --gc-sections can
@@ -35,30 +36,47 @@
 // file prevents the linker from pulling in any unused instances in the
 // first place.
 
-#if defined(HAVE_HWSERIAL1)
+#if defined(HAVE_HWSERIAL0)
 
-#if defined(UART1_RX_vect)
-ISR(UART1_RX_vect)
-#elif defined(USART1_RX_vect)
-ISR(USART1_RX_vect)
-#else
-#error "Don't know what the Data Register Empty vector is called for Serial1"
-#endif
-{
-  NeoSerial1._rx_complete_irq();
-}
+  #if defined(USART_RX_vect)
+    ISR(USART_RX_vect)
+  #elif defined(USART0_RX_vect)
+    ISR(USART0_RX_vect)
+  #elif defined(USART_RXC_vect)
+    ISR(USART_RXC_vect) // ATmega8
+  #else
+    #error "Don't know what the Data Received vector is called for NeoSerial"
+  #endif
+    {
+      NeoSerial._rx_complete_irq();
+    }
 
-#if defined(UART1_UDRE_vect)
-ISR(UART1_UDRE_vect)
-#elif defined(USART1_UDRE_vect)
-ISR(USART1_UDRE_vect)
-#else
-#error "Don't know what the Data Register Empty vector is called for Serial1"
-#endif
-{
-  NeoSerial1._tx_udr_empty_irq();
-}
+  #if defined(UART0_UDRE_vect)
+    ISR(UART0_UDRE_vect)
+  #elif defined(UART_UDRE_vect)
+    ISR(UART_UDRE_vect)
+  #elif defined(USART0_UDRE_vect)
+    ISR(USART0_UDRE_vect)
+  #elif defined(USART_UDRE_vect)
+    ISR(USART_UDRE_vect)
+  #else
+    #error "Don't know what the Data Register Empty vector is called for Serial"
+  #endif
+  {
+    NeoSerial._tx_udr_empty_irq();
+  }
 
-NeoHWSerial NeoSerial1(&UBRR1H, &UBRR1L, &UCSR1A, &UCSR1B, &UCSR1C, &UDR1);
+  #if defined(UBRRH) && defined(UBRRL)
+    NeoHWSerial NeoSerial(&UBRRH, &UBRRL, &UCSRA, &UCSRB, &UCSRC, &UDR);
+  #else
+    NeoHWSerial NeoSerial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0);
+  #endif
 
-#endif // HAVE_HWSERIAL1
+  // Function that can be weakly referenced by serialEventRun to prevent
+  // pulling in this file if it's not otherwise used.
+  bool NeoSerial0_available()
+  {
+    return NeoSerial.available();
+  }
+
+#endif // HAVE_HWSERIAL0

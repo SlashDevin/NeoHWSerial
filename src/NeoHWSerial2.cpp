@@ -1,5 +1,5 @@
 /*
-  NeoHWSerial3.cpp - Hardware serial library with attachInterrupt
+  NeoHWSerial2.cpp - Hardware serial library with attachInterrupt
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -21,11 +21,12 @@
   Modified 14 August 2012 by Alarus
   Modified 3 December 2013 by Matthijs Kooijman
   Modified 2 November 2015 by SlashDev
+  Modified 31 October 2020 by Georg Icking-Konert
 */
 
 #include "Arduino.h"
-#include <NeoHWSerial.h>
-#include <NeoHWSerial_private.h>
+#include "NeoHWSerial.h"
+#include "NeoHWSerial_private.h"
 
 // Each NeoHWSerial is defined in its own file, sine the linker pulls
 // in the entire file when any element inside is used. --gc-sections can
@@ -35,18 +36,25 @@
 // file prevents the linker from pulling in any unused instances in the
 // first place.
 
-#if defined(HAVE_HWSERIAL3)
+#if defined(HAVE_HWSERIAL2)
 
-ISR(USART3_RX_vect)
-{
-  NeoSerial3._rx_complete_irq();
-}
+  ISR(USART2_RX_vect)
+  {
+    NeoSerial2._rx_complete_irq();
+  }
 
-ISR(USART3_UDRE_vect)
-{
-  NeoSerial3._tx_udr_empty_irq();
-}
+  ISR(USART2_UDRE_vect)
+  {
+    NeoSerial2._tx_udr_empty_irq();
+  }
 
-NeoHWSerial NeoSerial3(&UBRR3H, &UBRR3L, &UCSR3A, &UCSR3B, &UCSR3C, &UDR3);
+  NeoHWSerial NeoSerial2(&UBRR2H, &UBRR2L, &UCSR2A, &UCSR2B, &UCSR2C, &UDR2);
 
-#endif // HAVE_HWSERIAL3
+  // Function that can be weakly referenced by serialEventRun to prevent
+  // pulling in this file if it's not otherwise used.
+  bool NeoSerial2_available()
+  {
+    return NeoSerial2.available();
+  }
+
+#endif // HAVE_HWSERIAL2
